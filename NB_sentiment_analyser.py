@@ -66,28 +66,58 @@ def map_sentiment(df):
 
 
 def compute_priors(df, classes):
+    print()
+    print("COMPUTE PRIORS")
     if classes == 3:
-        positive_count = df.loc[df['Sentiment'] == 2, 'Sentiment'].count()
-        neutral_count = df.loc[df['Sentiment'] == 1, 'Sentiment'].count()
-        negative_count = df.loc[df['Sentiment'] == 0, 'Sentiment'].count()
-        sum_counts = positive_count + neutral_count + negative_count
-        positive_prior = positive_count / sum_counts
-        neutral_prior = neutral_count / sum_counts
-        negative_prior = negative_count / sum_counts
-        return positive_prior, neutral_prior, negative_prior
+        pos_count = df.loc[df['Sentiment'] == 2, 'Sentiment'].count()
+        neu_count = df.loc[df['Sentiment'] == 1, 'Sentiment'].count()
+        neg_count = df.loc[df['Sentiment'] == 0, 'Sentiment'].count()
+        sum_counts = pos_count + neu_count + neg_count
+
+        pos_prior = pos_count / sum_counts
+        neu_prior = neu_count / sum_counts
+        neg_prior = neg_count / sum_counts
+        return pos_prior, neu_prior, neg_prior
     else:
-        very_positive_count = df.loc[df['Sentiment'] == 4, 'Sentiment'].count()
-        positive_count = df.loc[df['Sentiment'] == 3, 'Sentiment'].count()
-        neutral_count = df.loc[df['Sentiment'] == 2, 'Sentiment'].count()
-        negative_count = df.loc[df['Sentiment'] == 1, 'Sentiment'].count()
-        very_negative_count = df.loc[df['Sentiment'] == 0, 'Sentiment'].count()
-        sum_counts = very_positive_count + positive_count + neutral_count + negative_count + very_negative_count
-        very_positive_prior = very_positive_count / sum_counts
-        positive_prior = positive_count / sum_counts
-        neutral_prior = neutral_count / sum_counts
-        negative_prior = negative_count / sum_counts
-        very_negative_prior = very_negative_count / sum_counts
-        return very_positive_prior, positive_prior, neutral_prior, negative_prior, very_negative_prior
+        vpos_count = df.loc[df['Sentiment'] == 4, 'Sentiment'].count()
+        pos_count = df.loc[df['Sentiment'] == 3, 'Sentiment'].count()
+        neu_count = df.loc[df['Sentiment'] == 2, 'Sentiment'].count()
+        neg_count = df.loc[df['Sentiment'] == 1, 'Sentiment'].count()
+        vneg_count = df.loc[df['Sentiment'] == 0, 'Sentiment'].count()
+        sum_counts = vpos_count + pos_count + neu_count + neg_count + vneg_count
+
+        vpos_prior = vpos_count / sum_counts
+        pos_prior = pos_count / sum_counts
+        neu_prior = neu_count / sum_counts
+        neg_prior = neg_count / sum_counts
+        vneg_prior = vneg_count / sum_counts
+        return vpos_prior, pos_prior, neu_prior, neg_prior, vneg_prior
+
+
+def compute_likelihoods(df):
+    print()
+    print("COMPUTE LIKELIHOODS")
+    two_counts = {}
+    every_word = ' '.join([i for i in df['Phrase']]).split()
+
+    positives = df.loc[df['Sentiment'] == 2]
+    neutrals = df.loc[df['Sentiment'] == 1]
+    negatives = df.loc[df['Sentiment'] == 0]
+    pos_words = ' '.join([i for i in positives['Phrase']]).split()
+    neu_words = ' '.join([i for i in neutrals['Phrase']]).split()
+    neg_words = ' '.join([i for i in negatives['Phrase']]).split()
+    print("positive words", len(pos_words))
+    print("neutral words", len(neu_words))
+    print("negative words", len(neg_words))
+
+    for word in every_word:
+        # print(word)
+        if word in positives:
+            two_counts[word] += 1
+        else:
+            two_counts[word] = 1
+    print(two_counts)
+    return False
 
 
 def main():
@@ -117,6 +147,13 @@ def main():
         print('5 classes!')
         very_positive_prior, positive_prior, neutral_prior, negative_prior, very_negative_prior = compute_priors(df_training, number_classes)
         print(f'posp: {positive_prior}, neup: {neutral_prior}, negp: {negative_prior}, sum: {positive_prior + neutral_prior + negative_prior}')
+
+
+    compute_likelihoods(df_training)
+
+
+
+
 
     # You need to change this to return your macro-F1 score for the dev set
     f1_score = 0
