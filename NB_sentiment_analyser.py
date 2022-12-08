@@ -218,7 +218,7 @@ def main():
         save_data(results_dev, 'dev_predictions_'+str(number_classes)+'classes_acb20jt.tsv')
         save_data(results_test, 'test_predictions_'+str(number_classes)+'classes_acb20jt.tsv')
 
-    # print("Student\tNumber of classes\tFeatures\tmacro-F1(dev)\tAccuracy(dev)")
+    print("Student\tNumber of classes\tFeatures\tmacro-F1(dev)\tAccuracy(dev)")
     print("%s\t%d\t%s\t%f" % (USER_ID, number_classes, features, f1_score))
 
 if __name__ == "__main__":
