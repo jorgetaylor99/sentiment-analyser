@@ -1,3 +1,0 @@
-https://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string
-import nltk required in code
-required to enter python and install some nltk shit
