@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-import argparse
-import pandas as pd
+import math
 import string
+import argparse
+from collections import Counter
 import numpy as np
+import pandas as pd
+import nltk
 from nltk.corpus import stopwords
 from nltk import word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
-from collections import Counter
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -69,19 +71,20 @@ def preprocess_data(df, features):
     Return:
         df: the preprocessed dataframe
     '''
-    numbers = string.digits
     punct = string.punctuation.replace('!', '')  # keep exclamation marks!
     stoplist = set(stopwords.words('english'))
     stoplist.update({'nt', 'n', 'lrb', 'nrb', 'rrb', 'le', 'wo', 'pb'})  # add some more stopwords
     lemmatizer = WordNetLemmatizer()
 
     df['Phrase'] = df['Phrase'].str.lower()
-    df['Phrase'] = df['Phrase'].str.translate(str.maketrans('', '', numbers))
     df['Phrase'] = df['Phrase'].str.translate(str.maketrans('', '', punct))
     if features == 'features':
         df['Phrase'] = df['Phrase'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stoplist)]))
     df['Phrase'] = df['Phrase'].apply(lambda x: word_tokenize(x))
     df['Phrase'] = df['Phrase'].apply(lambda x:[lemmatizer.lemmatize(word) for word in x])
+    # if features == 'features':
+    #     df['Phrase'] = df['Phrase'].apply(nltk.pos_tag)
+    #     df['Phrase'] = df['Phrase'].apply(lambda x: [word for word, tag in x if tag in ['JJ', 'JJR', 'JJS']])
 
     return df
 
@@ -146,7 +149,7 @@ def compute_likelihoods(df, classes):
     for class_ in range(classes):
         likelihoods[class_] = {k: (v + 1) / (len(words[class_]) + len(vocab)) for k, v in dict(Counter(words[class_])).items()}
 
-    # add 1 smoothing for words that are not in the vocabulary
+    # add 1 laplace smoothing for words that are not in the vocabulary
     for _class in likelihoods:
         for word in vocab:
             if word not in likelihoods[_class]:
@@ -173,7 +176,8 @@ def classifier(df, priors, likelihoods, classes):
             calc = priors[_class]
             for word in row:
                 if word in likelihoods[_class]:
-                    calc *= likelihoods[_class][word]
+                    # calc *= likelihoods[_class][word]
+                    calc += math.log(likelihoods[_class][word])
             scores[_class] = calc
         highest_score = max(scores, key=scores.get)
         sentiments.append(highest_score)
