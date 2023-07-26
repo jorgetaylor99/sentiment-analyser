@@ -1,4 +1,4 @@
-# Naive Bayes Sentiment Analyzer
+# Naive Bayes Sentiment Analyser
 
 This project is a Python script that uses a Naive Bayes algorithm to perform sentiment analysis on the Rotten Tomatoes Movie Reviews dataset.
 
@@ -8,6 +8,7 @@ The script requires the following Python libraries:
 * numpy
 * nltk
 * seaborn
+  
 These libraries can be installed using pip.
 
 ## Installation
